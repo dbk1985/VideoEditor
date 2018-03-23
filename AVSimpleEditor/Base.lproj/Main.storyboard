@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="AVSEViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iUd-P9-G8d">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="iwF-0G-ABD">
+                                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <items>
+                                            <barButtonItem style="plain" systemItem="play" id="53A-Xy-K6v">
+                                                <connections>
+                                                    <action selector="playPauseToggle:" destination="BYZ-38-t0r" id="xWk-W1-Rgo"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="1fG-Xy-hoX"/>
+                                            <barButtonItem title="Trim" id="aAX-Ah-2rz">
+                                                <connections>
+                                                    <action selector="edit:" destination="BYZ-38-t0r" id="SKP-9Q-jfa"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem tag="1" title="Rot" id="55i-nV-n49">
+                                                <connections>
+                                                    <action selector="edit:" destination="BYZ-38-t0r" id="l4l-yp-Kfh"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem tag="2" title="Crop" id="y3t-79-UB5">
+                                                <connections>
+                                                    <action selector="edit:" destination="BYZ-38-t0r" id="TUa-TV-Tbv"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem tag="3" title="Mus" id="PpE-Z7-sMw">
+                                                <connections>
+                                                    <action selector="edit:" destination="BYZ-38-t0r" id="njZ-Jb-gv5"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem tag="4" title="Wat" id="csO-TA-Z14">
+                                                <connections>
+                                                    <action selector="edit:" destination="BYZ-38-t0r" id="I9Z-kV-KPV"/>
+                                                </connections>
+                                            </barButtonItem>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="ffE-hC-bKk"/>
+                                            <barButtonItem title="Export" id="R64-kO-iHy">
+                                                <connections>
+                                                    <action selector="exportToMovie:" destination="BYZ-38-t0r" id="hCT-if-7Yo"/>
+                                                </connections>
+                                            </barButtonItem>
+                                        </items>
+                                    </toolbar>
+                                    <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3LK-yZ-Ydc">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Unplayable Asset" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="sfy-cv-Cpa">
+                                                <rect key="frame" x="40" y="161" width="133" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="No Video" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="9Hh-ad-tXo">
+                                                <rect key="frame" x="70" y="161" width="70" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Protected Video" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rau-bG-nEx">
+                                                <rect key="frame" x="40" y="161" width="133" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="auZ-ms-hfb">
+                                                <rect key="frame" x="54" y="449" width="267" height="2"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            </progressView>
+                                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="2B3-ig-6dL">
+                                                <rect key="frame" x="90" y="161" width="37" height="37"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </activityIndicatorView>
+                                        </subviews>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <viewLayoutGuide key="safeArea" id="Nme-fD-YrK"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <connections>
+                        <outlet property="exportButton" destination="R64-kO-iHy" id="dJZ-Wp-vGQ"/>
+                        <outlet property="exportProgressView" destination="auZ-ms-hfb" id="b1T-Hb-Qh6"/>
+                        <outlet property="loadingSpinner" destination="2B3-ig-6dL" id="yjp-xh-l25"/>
+                        <outlet property="noVideoLabel" destination="9Hh-ad-tXo" id="UhY-FU-Uf4"/>
+                        <outlet property="playPauseButton" destination="53A-Xy-K6v" id="cg5-DG-twj"/>
+                        <outlet property="playerView" destination="3LK-yZ-Ydc" id="ndK-yh-4Eq"/>
+                        <outlet property="protectedVideoLabel" destination="rau-bG-nEx" id="snK-eM-48s"/>
+                        <outlet property="unplayableLabel" destination="sfy-cv-Cpa" id="9fq-Xg-YhU"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="24.800000000000001" y="31.934032983508249"/>
+        </scene>
+    </scenes>
+</document>
