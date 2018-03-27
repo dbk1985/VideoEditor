@@ -55,6 +55,7 @@
 #import "shaderUtil.h"
 #import "fileUtil.h"
 #import "debug.h"
+#import "PaintingPathInfo.h"
 
 //CONSTANTS:
 
@@ -128,12 +129,14 @@ typedef struct {
     
     // Buffer Objects
     GLuint vboId;
-    
+
     BOOL initialized;
 }
 /** 左右路线的点 */
-@property (nonatomic, strong) NSMutableArray *points;
-@property (nonatomic, strong) NSMutableArray *pointsPerPath;
+//@property (nonatomic, strong) NSMutableArray *points;
+//@property (nonatomic, strong) NSMutableArray *pointsPerPath;
+@property (nonatomic, strong) PaintingPathInfo *pathInfo;
+@property (nonatomic, strong) NSMutableArray *paths;
 
 @end
 
@@ -172,7 +175,8 @@ typedef struct {
         // Make sure to start with a cleared buffer
         needsErase = YES;
 
-        self.points = [NSMutableArray array];
+//        self.points = [NSMutableArray array];
+        self.paths = [NSMutableArray array];
     }
     
     return self;
@@ -206,7 +210,6 @@ typedef struct {
         [self setBrushColorWithRed:0 green:0 blue:0 alpha:0];
         // 设置绘画模式
         glBlendFunc(GL_ONE, GL_ZERO);
-        
     }else{
         [self setBrushColorWithRed:1 green:0 blue:0 alpha:kBrushOpacity];
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -458,7 +461,84 @@ typedef struct {
 
 -(void)undo
 {
+    
     self.isErase = YES;
+    static GLfloat*        vertexBuffer = NULL;
+    PaintingPathInfo *lastPathInfo = [self.paths lastObject];
+    [self.paths removeObject:lastPathInfo];
+    if (lastPathInfo) {
+        [self setBrushColorWithRed:lastPathInfo.r green:lastPathInfo.g blue:lastPathInfo.b alpha:lastPathInfo.a];
+
+        NSUInteger count = lastPathInfo.pointsInPath.count;
+        if(vertexBuffer == NULL)
+            vertexBuffer = malloc(count * 2 * sizeof(GLfloat));
+
+        [EAGLContext setCurrentContext:context];
+        glBindFramebuffer(GL_FRAMEBUFFER, viewFramebuffer);
+        [lastPathInfo.pointsInPath enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            CGPoint point = [obj CGPointValue];
+            vertexBuffer[2 * idx + 0] = point.x;
+            vertexBuffer[2 * idx + 1] = point.y;
+        }];
+        // Load data to the Vertex Buffer Object
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBufferData(GL_ARRAY_BUFFER, count*2*sizeof(GLfloat), vertexBuffer, GL_DYNAMIC_DRAW);
+
+        glEnableVertexAttribArray(ATTRIB_VERTEX);
+        glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+        // Draw
+        glUseProgram(program[PROGRAM_POINT].id);
+        glDrawArrays(GL_POINTS, 0, (int)count);
+
+        // Display the buffer
+        glBindRenderbuffer(GL_RENDERBUFFER, viewRenderbuffer);
+        [context presentRenderbuffer:GL_RENDERBUFFER];
+        self.isErase = NO;
+        if (vertexBuffer) {
+            free(vertexBuffer);
+            vertexBuffer = NULL;
+        }
+    }
+
+    [self.paths enumerateObjectsUsingBlock:^(PaintingPathInfo *pathInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (pathInfo) {
+            [self setBrushColorWithRed:pathInfo.r green:pathInfo.g blue:pathInfo.b alpha:pathInfo.a];
+
+            NSUInteger count = pathInfo.pointsInPath.count;
+            if(vertexBuffer == NULL)
+                vertexBuffer = malloc(count * 2 * sizeof(GLfloat));
+
+            [EAGLContext setCurrentContext:context];
+            glBindFramebuffer(GL_FRAMEBUFFER, viewFramebuffer);
+            [pathInfo.pointsInPath enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                CGPoint point = [obj CGPointValue];
+                vertexBuffer[2 * idx + 0] = point.x;
+                vertexBuffer[2 * idx + 1] = point.y;
+            }];
+            // Load data to the Vertex Buffer Object
+            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+            glBufferData(GL_ARRAY_BUFFER, count*2*sizeof(GLfloat), vertexBuffer, GL_DYNAMIC_DRAW);
+
+            glEnableVertexAttribArray(ATTRIB_VERTEX);
+            glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+            // Draw
+            glUseProgram(program[PROGRAM_POINT].id);
+            glDrawArrays(GL_POINTS, 0, (int)count);
+
+            // Display the buffer
+            glBindRenderbuffer(GL_RENDERBUFFER, viewRenderbuffer);
+            [context presentRenderbuffer:GL_RENDERBUFFER];
+
+            if (vertexBuffer) {
+                free(vertexBuffer);
+                vertexBuffer = NULL;
+            }
+        }
+    }];
+
+    /*
     NSArray *lastPathPoints = [self.points lastObject];
     [lastPathPoints enumerateObjectsUsingBlock:^(NSArray *pathPoints, NSUInteger idx, BOOL * _Nonnull stop) {
         if (pathPoints && pathPoints.count > 1) {
@@ -474,6 +554,7 @@ typedef struct {
             }
         }];
     }];
+     */
 }
 
 // Drawings a line onscreen based on where the user touches
@@ -510,6 +591,10 @@ typedef struct {
         vertexBuffer[2 * vertexCount + 0] = start.x + (end.x - start.x) * ((GLfloat)i / (GLfloat)count);
         vertexBuffer[2 * vertexCount + 1] = start.y + (end.y - start.y) * ((GLfloat)i / (GLfloat)count);
         vertexCount += 1;
+        if (self.pathInfo) {
+            [self.pathInfo.pointsInPath addObject:@(CGPointMake(start.x + (end.x - start.x) * ((GLfloat)i / (GLfloat)count), start.y + (end.y - start.y) * ((GLfloat)i / (GLfloat)count)))];
+        }
+
     }
     
     // Load data to the Vertex Buffer Object
@@ -565,7 +650,14 @@ typedef struct {
 // Handles the start of a touch
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    self.pointsPerPath = [NSMutableArray array];
+//    self.pointsPerPath = [NSMutableArray array];
+    self.pathInfo = [PaintingPathInfo new];
+    self.pathInfo.r = brushColor[0];
+    self.pathInfo.g = brushColor[1];
+    self.pathInfo.b = brushColor[2];
+    self.pathInfo.a = brushColor[3];
+    self.pathInfo.brushScale = kBrushScale;
+
     CGRect                bounds = [self bounds];
     UITouch*            touch = [[event touchesForView:self] anyObject];
     firstTouch = YES;
@@ -595,9 +687,9 @@ typedef struct {
         previousLocation.y = bounds.size.height - previousLocation.y;
 //    }
 
-    if (self.pointsPerPath) {
-        [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
-    }
+//    if (self.pointsPerPath) {
+//        [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
+//    }
     // Render the stroke
     [self renderLineFromPoint:previousLocation toPoint:location];
 }
@@ -611,13 +703,15 @@ typedef struct {
         firstTouch = NO;
         previousLocation = [touch previousLocationInView:self];
         previousLocation.y = bounds.size.height - previousLocation.y;
-        if (self.pointsPerPath) {
-            [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
-        }
+//        if (self.pointsPerPath) {
+//            [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
+//        }
         [self renderLineFromPoint:previousLocation toPoint:location];
     }
-    [self.points addObject:[self.pointsPerPath mutableCopy]];
-    self.pointsPerPath = nil;
+//    [self.points addObject:[self.pointsPerPath mutableCopy]];
+//    self.pointsPerPath = nil;
+    [self.paths addObject:[self.pathInfo copy]];
+    self.pathInfo = nil;
 }
 
 // Handles the end of a touch event.
