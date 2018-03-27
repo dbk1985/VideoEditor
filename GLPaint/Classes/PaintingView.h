@@ -69,6 +69,7 @@
 @property (nonatomic, assign) BOOL isStraightLine;
 
 - (void)erase;
+- (void)undo;
 - (void)setBrushColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
 
 @end

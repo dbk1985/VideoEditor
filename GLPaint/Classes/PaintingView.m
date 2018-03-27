@@ -58,7 +58,7 @@
 
 //CONSTANTS:
 
-#define kBrushOpacity		(1.0 / 3.0)//(1.0 / 3.0)
+#define kBrushOpacity		 1.0//(1.0 / 3.0)
 #define kBrushPixelStep		3
 // 控制笔刷大小 值越小笔刷越大
 #define kBrushScale			3
@@ -131,6 +131,9 @@ typedef struct {
     
     BOOL initialized;
 }
+/** 左右路线的点 */
+@property (nonatomic, strong) NSMutableArray *points;
+@property (nonatomic, strong) NSMutableArray *pointsPerPath;
 
 @end
 
@@ -168,6 +171,8 @@ typedef struct {
         self.isErase = NO;
         // Make sure to start with a cleared buffer
         needsErase = YES;
+
+        self.points = [NSMutableArray array];
     }
     
     return self;
@@ -451,6 +456,19 @@ typedef struct {
     self.backgroundColor = [UIColor clearColor];
 }
 
+-(void)undo
+{
+    self.isErase = YES;
+    NSArray *lastPathPoints = [self.points lastObject];
+    [lastPathPoints enumerateObjectsUsingBlock:^(NSArray *pathPoints, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (pathPoints && pathPoints.count > 1) {
+            [self renderLineFromPoint:[[pathPoints firstObject] CGPointValue] toPoint:[[pathPoints lastObject] CGPointValue]];
+        }
+    }];
+    [self.points removeObject:lastPathPoints];
+    self.isErase = NO;
+}
+
 // Drawings a line onscreen based on where the user touches
 - (void)renderLineFromPoint:(CGPoint)start toPoint:(CGPoint)end
 {
@@ -539,8 +557,9 @@ typedef struct {
 
 // Handles the start of a touch
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{   
-    CGRect				bounds = [self bounds];
+{
+    self.pointsPerPath = [NSMutableArray array];
+    CGRect                bounds = [self bounds];
     UITouch*            touch = [[event touchesForView:self] anyObject];
     firstTouch = YES;
     // Convert touch point from UIView referential to OpenGL one (upside-down flip)
@@ -558,17 +577,20 @@ typedef struct {
     UITouch*			touch = [[event touchesForView:self] anyObject];
     
     // Convert touch point from UIView referential to OpenGL one (upside-down flip)
-    if (firstTouch) {
+//    if (firstTouch) {
         firstTouch = NO;
-        previousLocation = [touch previousLocationInView:self];
-        previousLocation.y = bounds.size.height - previousLocation.y;
-    } else {
+//        previousLocation = [touch previousLocationInView:self];
+//        previousLocation.y = bounds.size.height - previousLocation.y;
+//    } else {
         location = [touch locationInView:self];
         location.y = bounds.size.height - location.y;
         previousLocation = [touch previousLocationInView:self];
         previousLocation.y = bounds.size.height - previousLocation.y;
+//    }
+
+    if (self.pointsPerPath) {
+        [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
     }
-    
     // Render the stroke
     [self renderLineFromPoint:previousLocation toPoint:location];
 }
@@ -582,8 +604,13 @@ typedef struct {
         firstTouch = NO;
         previousLocation = [touch previousLocationInView:self];
         previousLocation.y = bounds.size.height - previousLocation.y;
+        if (self.pointsPerPath) {
+            [self.pointsPerPath addObject:@[@(previousLocation),@(location)]];
+        }
         [self renderLineFromPoint:previousLocation toPoint:location];
     }
+    [self.points addObject:[self.pointsPerPath mutableCopy]];
+    self.pointsPerPath = nil;
 }
 
 // Handles the end of a touch event.

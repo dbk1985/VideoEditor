@@ -211,7 +211,7 @@
             [self loadTextButton];
             break;
         case 102:
-
+            [self.paintView undo];
             break;
         case 103:
             [self.paintView erase];
