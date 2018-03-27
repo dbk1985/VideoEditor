@@ -467,6 +467,13 @@ typedef struct {
     }];
     [self.points removeObject:lastPathPoints];
     self.isErase = NO;
+    [self.points enumerateObjectsUsingBlock:^(NSArray *pathsPoints, NSUInteger idx, BOOL * _Nonnull stop) {
+        [pathsPoints enumerateObjectsUsingBlock:^(NSArray *pathPoints, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (pathPoints && pathPoints.count > 1) {
+                [self renderLineFromPoint:[[pathPoints firstObject] CGPointValue] toPoint:[[pathPoints lastObject] CGPointValue]];
+            }
+        }];
+    }];
 }
 
 // Drawings a line onscreen based on where the user touches
