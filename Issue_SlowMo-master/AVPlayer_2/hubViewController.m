@@ -118,19 +118,69 @@ AVAsset *asset;
 }
 
 -(void)PlayRenderedOutput{
-    
-
-    
-    
     /* Make our new AVPlayerItem the AVPlayer's current item. */
-    if (self.avPlayer.currentItem != self.rampPlayerItem)
-    {
-
+    if (self.avPlayer.currentItem != self.rampPlayerItem){
         [self.avPlayer replaceCurrentItemWithPlayerItem:self.rampPlayerItem];
-        
     }
     
     [_avPlayer play];
+}
+- (IBAction)slowAction:(UIButton *)sender {
+    AVAssetTrack *assetVideoTrack = nil;
+    AVAssetTrack *assetAudioTrack = nil;
+    // Check if the asset contains video and audio tracks
+    if ([[self.asset2 tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
+        assetVideoTrack = [self.asset2 tracksWithMediaType:AVMediaTypeVideo][0];
+    }
+    if ([[self.asset2 tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
+        assetAudioTrack = [self.asset2 tracksWithMediaType:AVMediaTypeAudio][0];
+    }
+
+    CMTime insertionPoint = kCMTimeZero;
+    NSError *error = nil;
+
+    AVMutableComposition *mutableComposition = [AVMutableComposition composition];
+    // Insert the video and audio tracks from AVAsset
+    if (assetVideoTrack != nil) {
+        AVMutableCompositionTrack *compositionVideoTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
+        [compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [self.asset2 duration]) ofTrack:assetVideoTrack atTime:insertionPoint error:&error];
+    }
+    if (assetAudioTrack != nil) {
+        AVMutableCompositionTrack *compositionAudioTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+        [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [self.asset2 duration]) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];
+    }
+
+    CMTime assetTime = [self.asset2 duration];
+    CGFloat assetDuration = CMTimeGetSeconds(assetTime);
+
+    CGFloat fastRate = 0.5;//fastMotionRate; //比如3.0倍加速
+    CGFloat timeScale = self.asset2.duration.timescale;
+    //NSError *error = nil;
+    // 这里的startTime和endTime都是秒，需要乘以timeScale来组成CMTime
+    CMTime startTime = CMTimeMake(/*self.fastStartTime*/0 * timeScale, timeScale);
+    CMTime duration = CMTimeMake((/*self.fastEndTime - self.fastStartTime*/floor(assetDuration)) * timeScale, timeScale);
+    CMTimeRange fastRange = CMTimeRangeMake(startTime, duration);
+    CMTime scaledDuration = CMTimeMake(duration.value / fastRate, timeScale);
+
+    // 处理视频轨
+    [[mutableComposition tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+        [videoTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+    }];
+
+    // 处理音频轨
+    [[mutableComposition tracksWithMediaType:AVMediaTypeAudio] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull audioTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+        // 这里需要注意，如果音频和视频的timescale不一致，那么这里需要重新计算音频需要裁剪的区间，否则会出现音频视频裁剪区间错位的问题
+//        [audioTrack removeTimeRange:fastRange]; //消音
+        [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+    }];
+
+    AVComposition *Copy_of_MutableComposition = [mutableComposition copy];
+
+    self.rampPlayerItem = [AVPlayerItem playerItemWithAsset:Copy_of_MutableComposition];
+
+    [self PlayRenderedOutput];
+}
+- (IBAction)fastAction:(UIButton *)sender {
 }
 
 -(void)setupAVplayer{
@@ -180,7 +230,7 @@ AVAsset *asset;
         [compositionAudioTrack setPreferredTransform:sourceAudioTrack.preferredTransform];
         
         
-        double scaling = 6.0; // scale value to determind the time stretch depth
+        double scaling = 0.3; // scale value to determind the time stretch depth
         double totalDuration = 11.0*1000; // for how many seconds the video has to be slow mo'ed from the below starttime.
         double stTime = 1.0 *1000; // start time of the video
         double fragment = (totalDuration/1000) * 30; // actually, here 30 is nothing but the fps.

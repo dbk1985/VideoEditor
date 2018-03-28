@@ -42,13 +42,29 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZzT-mG-KiQ">
-                                <rect key="frame" x="117" y="507" width="71" height="30"/>
+                                <rect key="frame" x="34" y="516" width="71" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Ramped">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="butt3:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="0xU-A3-icI"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K00-en-84w">
+                                <rect key="frame" x="146" y="516" width="31" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="slow"/>
+                                <connections>
+                                    <action selector="slowAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="lGX-lQ-hCc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BSi-B7-C4u">
+                                <rect key="frame" x="219" y="516" width="30" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="fast"/>
+                                <connections>
+                                    <action selector="fastAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Uek-Hm-RjY"/>
                                 </connections>
                             </button>
                         </subviews>
