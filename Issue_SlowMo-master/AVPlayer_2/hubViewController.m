@@ -26,6 +26,9 @@
 @property AVPlayerItem* mPlayerItem3;
 @property AVPlayerItem* rampPlayerItem;
 @property NSURL * renderedURL;
+@property CGFloat fastMotionRate;
+@property CGFloat fastStartTime;
+@property CGFloat fastEndTime;
 
 @end
 
@@ -126,6 +129,10 @@ AVAsset *asset;
     [_avPlayer play];
 }
 - (IBAction)slowAction:(UIButton *)sender {
+    if (self.fastMotionRate == 0) {
+        self.fastMotionRate = 1.0;
+    }
+
     AVAssetTrack *assetVideoTrack = nil;
     AVAssetTrack *assetAudioTrack = nil;
     // Check if the asset contains video and audio tracks
@@ -150,18 +157,43 @@ AVAsset *asset;
         [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [self.asset2 duration]) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];
     }
 
+//    if (self.rampPlayerItem.canStepBackward){
+//        [self.rampPlayerItem stepByCount:(NSInteger)self.fastMotionRate--];
+//    }
+//    else
+//    {
+        // Do our best here...
+//        [self.rampPlayerItem seekToTime:CMTimeSubtract(self.avPlayer.currentTime, CMTimeMake(ABS(self.fastMotionRate)*1000, compositionFPS*1000)) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+//    }
+
+//    [self.rampPlayerItem stepByCount:(NSInteger)self.fastMotionRate--];
+//
     CMTime assetTime = [self.asset2 duration];
     CGFloat assetDuration = CMTimeGetSeconds(assetTime);
+    CGFloat currentTime = CMTimeGetSeconds([self.avPlayer currentTime]);
+    self.fastStartTime = currentTime;
 
-    CGFloat fastRate = 0.5;//fastMotionRate; //比如3.0倍加速
+    CGFloat fastRate = self.fastMotionRate++;//fastMotionRate; //比如3.0倍加速
     CGFloat timeScale = self.asset2.duration.timescale;
     //NSError *error = nil;
     // 这里的startTime和endTime都是秒，需要乘以timeScale来组成CMTime
-    CMTime startTime = CMTimeMake(/*self.fastStartTime*/0 * timeScale, timeScale);
-    CMTime duration = CMTimeMake((/*self.fastEndTime - self.fastStartTime*/floor(assetDuration)) * timeScale, timeScale);
+    CMTime startTime = CMTimeMake(/*self.fastStartTime*/self.fastStartTime * timeScale, timeScale);
+    CMTime duration = CMTimeMake(floor(/*self.fastEndTime - self.fastStartTime*/assetDuration - self.fastStartTime) * timeScale, timeScale);
     CMTimeRange fastRange = CMTimeRangeMake(startTime, duration);
     CMTime scaledDuration = CMTimeMake(duration.value / fastRate, timeScale);
-
+//
+//    if ([self.avPlayer.currentItem.asset isKindOfClass:[AVComposition class]]) {
+//        [[(AVMutableComposition *)self.rampPlayerItem.asset tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+//            [videoTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+//        }];
+//
+//        [[(AVMutableComposition *)self.rampPlayerItem.asset tracksWithMediaType:AVMediaTypeAudio] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull audioTrack, NSUInteger idx, BOOL * _Nonnull stop) {
+//            // 这里需要注意，如果音频和视频的timescale不一致，那么这里需要重新计算音频需要裁剪的区间，否则会出现音频视频裁剪区间错位的问题
+//            //        [audioTrack removeTimeRange:fastRange]; //消音
+//            [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
+//        }];
+//    }
+//
     // 处理视频轨
     [[mutableComposition tracksWithMediaType:AVMediaTypeVideo] enumerateObjectsUsingBlock:^(AVMutableCompositionTrack * _Nonnull videoTrack, NSUInteger idx, BOOL * _Nonnull stop) {
         [videoTrack scaleTimeRange:fastRange toDuration:scaledDuration];
@@ -174,13 +206,22 @@ AVAsset *asset;
         [audioTrack scaleTimeRange:fastRange toDuration:scaledDuration];
     }];
 
-    AVComposition *Copy_of_MutableComposition = [mutableComposition copy];
-
+    AVMutableComposition *Copy_of_MutableComposition = [mutableComposition copy];
     self.rampPlayerItem = [AVPlayerItem playerItemWithAsset:Copy_of_MutableComposition];
-
+    if (self.avPlayer.currentTime.value) {
+        [self.rampPlayerItem seekToTime:self.avPlayer.currentTime];
+    }
+    
     [self PlayRenderedOutput];
 }
-- (IBAction)fastAction:(UIButton *)sender {
+- (IBAction)fastAction:(UIButton *)sender
+{
+
+}
+
+-(void)startTimer
+{
+
 }
 
 -(void)setupAVplayer{
