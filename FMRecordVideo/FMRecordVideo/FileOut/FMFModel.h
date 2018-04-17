@@ -11,6 +11,7 @@
 #import <Foundation/Foundation.h>
 
 
+/** 强制竖屏方式 */
 
 //录制视频的长宽比
 typedef NS_ENUM(NSInteger, FMVideoViewType) {
