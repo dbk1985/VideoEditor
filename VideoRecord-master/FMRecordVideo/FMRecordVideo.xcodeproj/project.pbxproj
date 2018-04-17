@@ -30,6 +30,7 @@
 		992C74AC206E34690099C016 /* button-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 992C74A5206E34680099C016 /* button-normal.png */; };
 		992C74AD206E34690099C016 /* OBShapedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 992C74A7206E34680099C016 /* OBShapedButton.m */; };
 		992C74AE206E34690099C016 /* UIImage+ColorAtPixel.m in Sources */ = {isa = PBXBuildFile; fileRef = 992C74AA206E34680099C016 /* UIImage+ColorAtPixel.m */; };
+		9952853A2085C5FF00FB2AE6 /* UnlimitedScrollRuler.m in Sources */ = {isa = PBXBuildFile; fileRef = 995285392085C5FF00FB2AE6 /* UnlimitedScrollRuler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,8 @@
 		992C74A7206E34680099C016 /* OBShapedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OBShapedButton.m; sourceTree = "<group>"; };
 		992C74A9206E34680099C016 /* UIImage+ColorAtPixel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ColorAtPixel.h"; sourceTree = "<group>"; };
 		992C74AA206E34680099C016 /* UIImage+ColorAtPixel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ColorAtPixel.m"; sourceTree = "<group>"; };
+		995285382085C5FE00FB2AE6 /* UnlimitedScrollRuler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnlimitedScrollRuler.h; sourceTree = "<group>"; };
+		995285392085C5FF00FB2AE6 /* UnlimitedScrollRuler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UnlimitedScrollRuler.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +130,8 @@
 				1DB91FE21E63C85D00DF1264 /* Supporting Files */,
 				9919C6C6206CCD7C000EAFB9 /* FMNavigationController.h */,
 				9919C6C7206CCD7C000EAFB9 /* FMNavigationController.m */,
+				995285382085C5FE00FB2AE6 /* UnlimitedScrollRuler.h */,
+				995285392085C5FF00FB2AE6 /* UnlimitedScrollRuler.m */,
 			);
 			path = FMRecordVideo;
 			sourceTree = "<group>";
@@ -291,6 +296,7 @@
 				1D21A0701E7938A700D47F09 /* AVAssetWriteManager.m in Sources */,
 				992C74AE206E34690099C016 /* UIImage+ColorAtPixel.m in Sources */,
 				1DD65F4D1E75873A000971A0 /* XCFileManager.m in Sources */,
+				9952853A2085C5FF00FB2AE6 /* UnlimitedScrollRuler.m in Sources */,
 				1DD65F5E1E7592D0000971A0 /* FMFModel.m in Sources */,
 				1DD65F551E758D33000971A0 /* FMRecordProgressView.m in Sources */,
 				1DB91FEA1E63C85D00DF1264 /* ViewController.m in Sources */,

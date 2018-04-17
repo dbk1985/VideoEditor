@@ -13,8 +13,8 @@
 #import "FMFileVideoController.h"
 #import "FMWriteVideoController.h"
 #import "FMNavigationController.h"
-@interface ViewController ()
 
+@interface ViewController ()
 @end
 
 @implementation ViewController
