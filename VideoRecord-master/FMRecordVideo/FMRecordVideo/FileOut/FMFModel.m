@@ -180,6 +180,34 @@
     captureConnection.videoOrientation = [self.previewlayer connection].videoOrientation;
 }
 
+- (AVCaptureVideoOrientation)getCaptureVideoOrientation {
+    AVCaptureVideoOrientation result;
+
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:
+            result = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            //如果这里设置成AVCaptureVideoOrientationPortraitUpsideDown，则视频方向和拍摄时的方向是相反的。
+            result = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationFaceDown:
+        case UIDeviceOrientationLandscapeLeft:
+            result = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            result = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        default:
+            result = AVCaptureVideoOrientationPortrait;
+            break;
+    }
+
+    return result;
+}
+
 //-(void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(void *)context
 //{
 //    if ([@"statusBarOrientation" isEqualToString:keyPath]) {
@@ -289,7 +317,6 @@
     [self setFocusCursorWithPoint:point];
     [self focusWithMode:AVCaptureFocusModeAutoFocus exposureMode:AVCaptureExposureModeAutoExpose atPoint:cameraPoint];
 }
-
 
 -(void)setFocusCursorWithPoint:(CGPoint)point{
     self.focusCursor.center=point;
